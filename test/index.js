@@ -10,7 +10,7 @@ import { WebpackTask } from '@phylum/webpack';
 import { WebpackServerTask } from '..';
 import { writeFile } from 'fs-extra';
 
-test('foo', t => tmp(async dirname => {
+test('simple usage', t => tmp(async dirname => {
 	const bundle = new WebpackTask(Task.value({
 		context: dirname,
 		entry: `${dirname}/entry.js`,
@@ -20,7 +20,7 @@ test('foo', t => tmp(async dirname => {
 		}
 	}));
 	const serveBundle = new WebpackServerTask(bundle, Task.value({
-		listen: 0,
+		listen: 8081,
 		setup: setup => {
 			t.true(setup.webpackTask instanceof WebpackTask);
 		}
