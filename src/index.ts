@@ -6,6 +6,7 @@ import { ServeStaticOptions } from 'serve-static';
 import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
 import webpack = require('webpack');
+import { resolve } from 'path';
 
 export class WebpackServerTask extends Task<WebpackServerInfo> {
 	public constructor(public readonly webpackTask: WebpackTask, optionsTask?: Task<WebpackServerOptions>) {
@@ -14,16 +15,14 @@ export class WebpackServerTask extends Task<WebpackServerInfo> {
 			const options = optionsTask ? await t.use(optionsTask) : {};
 
 			const publicPath = compiler.options.output.publicPath;
-			const contentBase = compiler.options.output.path;
+			const contentBase = compiler.options.output.path || resolve('dist');
 
 			const app = express();
-			app.use(publicPath, express.static(contentBase, options.files || {}));
+			app.use(publicPath || '/', express.static(contentBase, options.files || {}));
 			const server = createServer(app);
 
 			const env = { webpackTask, compiler, options, app, server };
-			if (Array.isArray(options.setup)) {
-				await Promise.all(options.setup.map(setup => setup(env)))
-			} else if (options.setup) {
+			if (options.setup) {
 				await options.setup(env);
 			}
 
@@ -55,12 +54,10 @@ export interface WebpackServerSetup {
 	readonly server: Server;
 }
 
-export type WebpackServerSetupFn = (setup: WebpackServerSetup) => Promise<void> | void;
-
 export interface WebpackServerOptions {
 	readonly listen?: number | string | {port: number, host: string};
 	readonly files?: ServeStaticOptions;
-	readonly setup?: WebpackServerSetupFn | WebpackServerSetupFn[];
+	readonly setup?: (setup: WebpackServerSetup) => Promise<void> | void;
 }
 
 export interface WebpackServerInfo {

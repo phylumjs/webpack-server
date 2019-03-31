@@ -4,25 +4,32 @@
 	"description": "Webpack server task",
 	"main": "dist/index.js",
 	"scripts": {
-		"compile": "rimraf dist && tsc",
-		"compile:watch": "rimraf dist && tsc -w",
+		"compile": "tsc",
+		"compile:watch": "tsc -w",
 		"test": "npm run compile && nyc -- ava -v",
 		"test:watch": "npm run compile && concurrently -n tsc,ava \"tsc -w\" \"ava -w -v\"",
-		"prepack": "npm run compile"
+		"prepack": "rimraf dist && npm test && npm run compile"
 	},
 	"dependencies": {
 		"@types/express": "^4.16.1",
-		"@types/node": "^10.12.30",
+		"@types/node": "^10.14.4",
 		"express": "^4.16.4"
 	},
 	"devDependencies": {
 		"@phylum/pipeline": "^4.0.0",
-		"@phylum/webpack": "^4.0.1",
+		"@phylum/webpack": "^4.0.2",
 		"ava": "^1.4.1",
 		"concurrently": "^4.1.0",
+		"fs-extra": "^7.0.1",
 		"nyc": "^13.3.0",
 		"rimraf": "^2.6.3",
-		"typescript": "^3.4.1"
+		"tmp": "^0.1.0",
+		"typescript": "^3.4.1",
+		"webpack": "^4.29.6"
+	},
+	"peerDependencies": {
+		"@phylum/pipeline": "^4.0.0",
+		"@phylum/webpack": "^4.0.2"
 	},
 	"author": "Max J. Polster",
 	"license": "MIT"
