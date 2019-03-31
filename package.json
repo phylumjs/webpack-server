@@ -8,7 +8,8 @@
 		"compile:watch": "tsc -w",
 		"test": "npm run compile && nyc -- ava -v",
 		"test:watch": "npm run compile && concurrently -n tsc,ava \"tsc -w\" \"ava -w -v\"",
-		"prepack": "rimraf dist && npm test && npm run compile"
+		"prepack": "rimraf dist && npm test && npm run compile",
+		"report-coverage": "nyc report --reporter=text-lcov | coveralls"
 	},
 	"dependencies": {
 		"@types/express": "^4.16.1",
@@ -20,6 +21,7 @@
 		"@phylum/webpack": "^4.0.2",
 		"ava": "^1.4.1",
 		"concurrently": "^4.1.0",
+		"coveralls": "^3.0.3",
 		"fs-extra": "^7.0.1",
 		"nyc": "^13.3.0",
 		"rimraf": "^2.6.3",
