@@ -14,7 +14,9 @@
 	"dependencies": {
 		"@types/express": "^4.16.1",
 		"@types/node": "^10.14.4",
-		"express": "^4.16.4"
+		"@types/ws": "^6.0.1",
+		"express": "^4.16.4",
+		"ws": "^6.2.1"
 	},
 	"devDependencies": {
 		"@phylum/pipeline": "^4.0.0",

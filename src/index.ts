@@ -1,5 +1,5 @@
 
-import { Task } from '@phylum/pipeline';
+import { Task, dispose } from '@phylum/pipeline';
 import { WebpackTask } from '@phylum/webpack';
 import express = require('express');
 import { ServeStaticOptions } from 'serve-static';
@@ -7,6 +7,8 @@ import { createServer, Server } from 'http';
 import { AddressInfo } from 'net';
 import webpack = require('webpack');
 import { resolve } from 'path';
+import WebSocket = require('ws');
+import { inspect } from 'util';
 
 export class WebpackServerTask extends Task<WebpackServerInfo> {
 	public constructor(public readonly webpackTask: WebpackTask, optionsTask?: Task<WebpackServerOptions>) {
@@ -20,8 +22,29 @@ export class WebpackServerTask extends Task<WebpackServerInfo> {
 			const app = express();
 			app.use(publicPath || '/', express.static(contentBase, options.files || {}));
 			const server = createServer(app);
+			const wss = new WebSocket.Server({ server, clientTracking: true });
 
-			const env = { webpackTask, compiler, options, app, server };
+			const updates = webpackTask.pipe(state => {
+				state.then(stats => {
+					const message = JSON.stringify({
+						name: 'webpack-update',
+						stats: stats.toJson({ all: false, warnings: true, errors: true })
+					});
+					for (const ws of wss.clients) {
+						ws.send(message);
+					}
+				}).catch(error => {
+					const message = JSON.stringify({
+						name: 'webpack-update',
+						error: error.stack || inspect(error)
+					});
+					for (const ws of wss.clients) {
+						ws.send(message);
+					}
+				});
+			});
+
+			const env = { task: this, webpackTask, compiler, options, app, server, wss };
 			if (options.setup) {
 				await options.setup(env);
 			}
@@ -33,6 +56,7 @@ export class WebpackServerTask extends Task<WebpackServerInfo> {
 			});
 			const address = server.address();
 			t.using(() => new Promise((resolve, reject) => {
+				dispose(updates);
 				server.close(error => {
 					if (error) {
 						reject(error);
@@ -40,6 +64,11 @@ export class WebpackServerTask extends Task<WebpackServerInfo> {
 						resolve();
 					}
 				});
+				for (const ws of wss.clients) {
+					if (ws.readyState < 1) {
+						ws.terminate();
+					}
+				}
 			}));
 			return { address };
 		});
@@ -47,11 +76,13 @@ export class WebpackServerTask extends Task<WebpackServerInfo> {
 }
 
 export interface WebpackServerSetup {
+	readonly task: WebpackServerTask;
 	readonly webpackTask: WebpackTask;
 	readonly compiler: webpack.Compiler;
 	readonly options: WebpackServerOptions;
 	readonly app: express.Express;
 	readonly server: Server;
+	readonly wss: WebSocket.Server;
 }
 
 export interface WebpackServerOptions {
