@@ -24,3 +24,26 @@ new Task(async t => {
 	await t.use(serveBundle);
 });
 ```
+
+## Listening
+By default, the server will listen on `localhost:8080`.
+```ts
+new WebpackServerTask(webpackTask, Task.value({
+	listen: 8080
+}));
+```
+You can specify any argument that can be passed to `net/server.listen(..)`
+
+## History fallback
+```bash
+npm i connect-history-api-fallback
+```
+```ts
+import history = require('connect-history-api-fallback');
+
+new WebpackServerTask(webpackTask, Task.value({
+	setup({ app }) {
+		app.use(history());
+	}
+}));
+```
