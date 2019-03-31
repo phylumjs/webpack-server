@@ -20,7 +20,10 @@ test('simple usage', t => tmp(async dirname => {
 		}
 	}));
 	const serveBundle = new WebpackServerTask(bundle, Task.value({
-		listen: 8081,
+		listen: {
+			host: '127.0.0.1',
+			port: 0
+		},
 		setup: setup => {
 			t.true(setup.webpackTask instanceof WebpackTask);
 		}
