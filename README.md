@@ -1,4 +1,7 @@
 # Webpack Server Task
+[![Build Status](https://travis-ci.com/phylumjs/webpack-server.svg?branch=master)](https://travis-ci.com/phylumjs/webpack-server)
+[![Coverage Status](https://coveralls.io/repos/github/phylumjs/webpack-server/badge.svg?branch=master)](https://coveralls.io/github/phylumjs/webpack-server?branch=master)
+[![Latest](https://img.shields.io/npm/v/@phylum/webpack-server.svg?label=latest) ![License](https://img.shields.io/npm/l/@phylum/webpack-server.svg?label=license)](https://npmjs.org/package/@phylum/webpack-server)
 
 ## Installation
 ```bash
