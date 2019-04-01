@@ -9,7 +9,8 @@ npm i webpack @phylum/webpack @phylum/webpack-server
 ```
 
 ## Usage
-The webpack server task runs an [express](https://expressjs.com/) application that serves the webpack output directory.
+The webpack server task runs an [express](https://expressjs.com/) application that serves the webpack output directory.<br>
+*Note, that the webpack task will not be started automatically by the webpack server task.*
 
 ```ts
 import { Task } from '@phylum/pipeline';
@@ -38,6 +39,7 @@ new WebpackServerTask(webpackTask, Task.value({
 You can specify any argument that can be passed to `net/server.listen(..)`
 
 ## History fallback
+For single page applications, it is common to fallback to `/index.html` if a request path is not found:
 ```bash
 npm i connect-history-api-fallback
 ```
@@ -49,4 +51,36 @@ new WebpackServerTask(webpackTask, Task.value({
 		app.use(history());
 	}
 }));
+```
+
+## Client Updates
+When the webpack task completes, an update message is broadcasted to all connected clients via web socket:
+```ts
+{
+	"name": "webpack-update",
+	// In case of an error:
+	"error": "<details>"
+	// else:
+	"stats": {
+		"errors": [...],
+		"warnings": [...]
+	}
+}
+```
+
+## Hot module replacement
+The hot module replacement client that ships with this package connects to the included web socket server and applies updates or reloads the page if not possible.
+```ts
+// Import the hmr client somewhere in your code...
+import '@phylum/webpack-server/dist/hmr';
+```
+```ts
+// ...or add it to your entry point:
+entry: ['@phylum/webpack-server/dist/hmr', './src/index.js'],
+
+// Optional. If not included, the hmr client
+// will fallback to just reloading the web page.
+plugins: [
+	new webpack.HotModuleReplacementPlugin()
+]
 ```

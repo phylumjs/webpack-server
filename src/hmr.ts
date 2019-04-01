@@ -1,6 +1,4 @@
 
-console.log('Hello World!');
-
 let ws: WebSocket;
 let wasConnected = false;
 
@@ -22,7 +20,6 @@ function connect() {
 					console.error(message.error);
 				} else {
 					let hasErrors = false;
-
 					if (message.stats) {
 						for (const warn of message.stats.warnings || []) {
 							console.warn(warn);
@@ -32,17 +29,14 @@ function connect() {
 							hasErrors = true;
 						}
 					}
-
 					if (!hasErrors) {
-						// TODO: Try to apply updates.
+						applyUpdates();
 					}
 				}
 			}
 		});
 	}
 }
-
-connect();
 
 function applyUpdates() {
 	if (module['hot'] && module['hot'].status() === 'idle') {
@@ -57,3 +51,5 @@ function applyUpdates() {
 		location.reload();
 	}
 }
+
+connect();
