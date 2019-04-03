@@ -19,7 +19,7 @@
 		"ws": "^6.2.1"
 	},
 	"devDependencies": {
-		"@phylum/pipeline": "^4.0.0",
+		"@phylum/pipeline": "^4.0.2",
 		"@phylum/webpack": "^4.0.2",
 		"ava": "^1.4.1",
 		"concurrently": "^4.1.0",
@@ -32,9 +32,10 @@
 		"webpack": "^4.29.6"
 	},
 	"peerDependencies": {
-		"@phylum/pipeline": "^4.0.0",
+		"@phylum/pipeline": "^4.0.2",
 		"@phylum/webpack": "^4.0.2"
 	},
+	"repository": "github:phylumjs/webpack-server",
 	"author": "Max J. Polster",
 	"license": "MIT"
 }
